@@ -28,14 +28,15 @@ export const PolaroidTopFrame: React.FC<PolaroidTopFrameProps> = ({
   className,
 }) => {
   const cacheKey = getFrameCacheKey(
-    'polaroid-top',
+    'polaroid-classic',
     size,
     color,
     rotation,
+    0,
     name,
     animation
   );
-  const isAnimated = animation?.enabled && animation.type !== null;
+  const isAnimated = !!(animation?.enabled && animation.type !== null);
   const optimizedStyles = getOptimizedStyles(isAnimated);
   const animationProps = getAnimationProps(animation);
 
