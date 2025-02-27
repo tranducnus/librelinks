@@ -1,5 +1,11 @@
 export type EmbedType = 'video' | 'photo' | 'rich' | 'link' | 'playlist';
-export type ProviderName = 'Instagram' | 'YouTube' | 'Twitter' | 'TikTok' | 'Spotify' | 'Generic';
+export type ProviderName =
+  | 'Instagram'
+  | 'YouTube'
+  | 'Twitter'
+  | 'TikTok'
+  | 'Spotify'
+  | 'Generic';
 
 export interface ScriptConfig {
   main: string;
@@ -32,6 +38,7 @@ export interface RichMediaContent {
   type: EmbedType;
   provider: ProviderName;
   html?: string;
+  embedHtml?: string; // Used for embedded content
   url?: string;
   thumbnail?: string;
   thumbnails?: Array<{ href?: string; url?: string }>;
@@ -40,6 +47,7 @@ export interface RichMediaContent {
   author?: string;
   authorUrl?: string;
   metadata?: Record<string, any>;
+  iframelyMeta?: Record<string, any>; // Used for iframely metadata
 }
 
 export interface RichMediaPreviewProps {
@@ -55,11 +63,33 @@ export interface RichMediaPreviewProps {
 // Utility type helpers
 export type ProcessHtmlFunction = (html: string) => string;
 
+// Container component props
+export interface EmbedContainerProps {
+  config?: Partial<EmbedConfig>;
+  children: React.ReactNode;
+  isLoading?: boolean;
+  hasError?: boolean;
+}
+
+export interface ProviderContainerProps extends EmbedContainerProps {
+  url?: string;
+  title?: string;
+  maxWidth?: string;
+  className?: string;
+  metadata?: {
+    processed?: {
+      type?: string;
+      html?: string;
+    };
+  };
+}
+
 // Constants
 export const DEFAULT_ASPECT_RATIO: AspectRatioConfig = {
   mobile: 'aspect-video',
   tablet: 'aspect-video',
-  desktop: 'aspect-video'
+  desktop: 'aspect-video',
 };
 
-export const DEFAULT_CONTAINER_CLASS = 'w-full h-full overflow-hidden rounded-lg bg-gray-50'; 
+export const DEFAULT_CONTAINER_CLASS =
+  'w-full h-full overflow-hidden rounded-lg bg-gray-50';

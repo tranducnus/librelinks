@@ -11,6 +11,11 @@ import {
 interface RichMediaPreviewProps {
   link: RichMediaContent;
   config?: Partial<EmbedConfig>;
+  appearance?: 'minimal' | 'full';
+  onLoad?: () => void;
+  onError?: (error: Error) => void;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 declare global {
@@ -26,7 +31,15 @@ declare global {
   }
 }
 
-const RichMediaPreview = ({ link, config }: RichMediaPreviewProps) => {
+const RichMediaPreview = ({
+  link,
+  config,
+  appearance = 'full',
+  onLoad,
+  onError,
+  className,
+  style,
+}: RichMediaPreviewProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -35,14 +48,13 @@ const RichMediaPreview = ({ link, config }: RichMediaPreviewProps) => {
   const initializeCount = useRef(0);
 
   // Get provider config
-  const providerConfig =
-    EMBED_CONFIGS[link.providerName] || EMBED_CONFIGS.Generic;
+  const providerConfig = EMBED_CONFIGS[link.provider] || EMBED_CONFIGS.Generic;
   const mergedConfig = { ...providerConfig, ...config };
 
   // Debug the incoming link data
   useEffect(() => {
     console.log('RichMediaPreview - Component mounted/updated with link:', {
-      providerName: link.providerName,
+      providerName: link.provider,
       hasEmbedHtml: !!link.embedHtml,
       scriptLoaded,
       isLoading,
@@ -52,7 +64,7 @@ const RichMediaPreview = ({ link, config }: RichMediaPreviewProps) => {
   // Handle provider-specific script loading
   useEffect(() => {
     console.log('Script loading effect triggered:', {
-      providerName: link.providerName,
+      providerName: link.provider,
       hasScript: !!scriptRef.current,
     });
 
@@ -85,7 +97,7 @@ const RichMediaPreview = ({ link, config }: RichMediaPreviewProps) => {
         scriptRef.current = script;
         document.body.appendChild(script);
       } else {
-        console.log('Loading provider script:', link.providerName);
+        console.log('Loading provider script:', link.provider);
         const mainScript = document.createElement('script');
         mainScript.async = true;
         mainScript.src = scriptConfig.main;
@@ -134,7 +146,7 @@ const RichMediaPreview = ({ link, config }: RichMediaPreviewProps) => {
         scriptRef.current = null;
       }
     };
-  }, [link.providerName, mergedConfig.script]);
+  }, [link.provider, mergedConfig.script]);
 
   // Initialize embeds when content changes or script loads
   useEffect(() => {
@@ -146,7 +158,7 @@ const RichMediaPreview = ({ link, config }: RichMediaPreviewProps) => {
     initializeCount.current += 1;
     console.log('Initializing embed:', {
       count: initializeCount.current,
-      providerName: link.providerName,
+      providerName: link.provider,
       hasEmbedHtml: !!link.embedHtml,
     });
 
@@ -156,7 +168,7 @@ const RichMediaPreview = ({ link, config }: RichMediaPreviewProps) => {
     }
 
     // Initialize appropriate embed
-    if (link.providerName === 'Instagram' && window.instgrm) {
+    if (link.provider === 'Instagram' && window.instgrm) {
       console.log('Processing Instagram embed');
       window.instgrm.Embeds.process();
     } else if (window.iframely) {
@@ -184,23 +196,24 @@ const RichMediaPreview = ({ link, config }: RichMediaPreviewProps) => {
     return null;
   }
 
-  const handleIframeError = (error: Event) => {
-    console.error('RichMediaPreview - Iframe error:', error);
-    setIsLoading(false);
+  const handleIframeError = (event: React.SyntheticEvent<HTMLDivElement>) => {
     setHasError(true);
-    setErrorMessage('Failed to load preview');
+    setIsLoading(false);
+    setErrorMessage('Failed to load embedded content');
+    onError?.(new Error('Failed to load embedded content'));
+  };
+
+  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    setHasError(true);
+    setIsLoading(false);
+    setErrorMessage('Failed to load image');
+    onError?.(new Error('Failed to load image'));
   };
 
   const handleImageLoad = () => {
     console.log('Image loaded successfully');
     setIsLoading(false);
-  };
-
-  const handleImageError = (error: Event) => {
-    console.error('No image:', error);
-    setIsLoading(false);
-    setHasError(true);
-    setErrorMessage('Failed to load preview image');
+    onLoad?.();
   };
 
   // Get the first valid thumbnail URL
@@ -235,7 +248,7 @@ const RichMediaPreview = ({ link, config }: RichMediaPreviewProps) => {
       />
     ) : null;
 
-    switch (link.providerName) {
+    switch (link.provider) {
       case 'Instagram':
         return (
           <InstagramContainer
@@ -282,7 +295,7 @@ const RichMediaPreview = ({ link, config }: RichMediaPreviewProps) => {
   };
 
   return (
-    <>
+    <div className={className} style={style}>
       {renderContent()}
       {link.iframelyMeta?.description && !hasError && !isLoading && (
         <div className="p-4 border-t border-gray-100">
@@ -291,7 +304,7 @@ const RichMediaPreview = ({ link, config }: RichMediaPreviewProps) => {
           </p>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
