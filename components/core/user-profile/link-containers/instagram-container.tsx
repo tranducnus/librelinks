@@ -19,7 +19,7 @@ const InstagramContainer: React.FC<InstagramContainerProps> = ({
   title,
   maxWidth = '540px',
   config,
-  className = ''
+  className = '',
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -86,9 +86,9 @@ const InstagramContainer: React.FC<InstagramContainerProps> = ({
     <ErrorBoundary>
       <div className="instagram-wrapper relative w-full h-full">
         <ContentContainer
-          config={instagramConfig}
-          isLoading={isLoading}
-          hasError={hasError}
+          type="social"
+          provider="Instagram"
+          className={instagramConfig.containerClass}
         >
           {/* Instagram-specific wrapper for better mobile handling */}
           <div className="instagram-content-wrapper relative w-full h-full">
@@ -98,7 +98,9 @@ const InstagramContainer: React.FC<InstagramContainerProps> = ({
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
                   <div className="flex flex-col items-center gap-2">
                     <Instagram className="w-8 h-8 text-gray-400 animate-pulse" />
-                    <p className="text-sm text-gray-500">Loading Instagram content...</p>
+                    <p className="text-sm text-gray-500">
+                      Loading Instagram content...
+                    </p>
                   </div>
                 </div>
               )}
@@ -143,4 +145,4 @@ const InstagramContainer: React.FC<InstagramContainerProps> = ({
   );
 };
 
-export default InstagramContainer; 
+export default InstagramContainer;
