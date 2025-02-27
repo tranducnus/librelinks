@@ -16,7 +16,7 @@ interface SpotifyContainerProps {
   };
 }
 
-export const SpotifyContainer = ({
+const SpotifyContainer = ({
   url,
   title,
   maxWidth = '640px',

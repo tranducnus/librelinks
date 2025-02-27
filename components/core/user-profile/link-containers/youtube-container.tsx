@@ -28,7 +28,7 @@ const YouTubeContainer: React.FC<YouTubeContainerProps> = ({
   title,
   maxWidth = '560px',
   config,
-  className = ''
+  className = '',
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -39,7 +39,8 @@ const YouTubeContainer: React.FC<YouTubeContainerProps> = ({
 
   // Extract video ID from URL
   const getVideoId = (url: string): string | null => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
     return match && match[2].length === 11 ? match[2] : null;
   };
@@ -96,15 +97,15 @@ const YouTubeContainer: React.FC<YouTubeContainerProps> = ({
           playerVars: {
             autoplay: 0,
             modestbranding: 1,
-            rel: 0
+            rel: 0,
           },
           events: {
             onReady: () => setIsLoading(false),
             onError: () => {
               setHasError(true);
               setIsLoading(false);
-            }
-          }
+            },
+          },
         });
       } catch (error) {
         setHasError(true);
@@ -118,15 +119,15 @@ const YouTubeContainer: React.FC<YouTubeContainerProps> = ({
   return (
     <ErrorBoundary>
       <ContentContainer
-        type="video"
+        type="embed"
         maxWidth={{
           mobile: '100%',
           tablet: maxWidth,
-          desktop: maxWidth
+          desktop: maxWidth,
         }}
         className={className}
       >
-        <div 
+        <div
           ref={containerRef}
           className="relative w-full aspect-video overflow-hidden"
         >
@@ -135,7 +136,9 @@ const YouTubeContainer: React.FC<YouTubeContainerProps> = ({
             <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
               <div className="flex flex-col items-center gap-2">
                 <Youtube className="w-8 h-8 text-gray-400 animate-pulse" />
-                <p className="text-sm text-gray-500">Loading YouTube video...</p>
+                <p className="text-sm text-gray-500">
+                  Loading YouTube video...
+                </p>
               </div>
             </div>
           )}
@@ -178,4 +181,4 @@ const YouTubeContainer: React.FC<YouTubeContainerProps> = ({
   );
 };
 
-export default YouTubeContainer; 
+export default YouTubeContainer;
