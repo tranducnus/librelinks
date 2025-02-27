@@ -36,7 +36,7 @@ export const CircleFrame: React.FC<CircleFrameProps> = ({
     '',
     animation
   );
-  const isAnimated = animation?.enabled && animation.type !== null;
+  const isAnimated = !!(animation?.enabled && animation.type !== null);
   const optimizedStyles = getOptimizedStyles(isAnimated);
   const animationProps = getAnimationProps(animation);
 
