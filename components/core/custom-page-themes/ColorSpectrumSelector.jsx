@@ -1,23 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { HexColorPicker } from 'react-colorful';
 import debounce from 'lodash/debounce';
+import PropTypes from 'prop-types';
 
-interface ColorSpectrumSelectorProps {
-  initialColor: string;
-  onChange: (color: string) => void;
-  label?: string;
-}
-
-const ColorSpectrumSelector: React.FC<ColorSpectrumSelectorProps> = ({
-  initialColor,
-  onChange,
-  label,
-}) => {
+const ColorSpectrumSelector = ({ initialColor, onChange, label }) => {
   const [localColor, setLocalColor] = useState(initialColor);
 
   // Debounce the onChange callback to prevent too many updates
   const debouncedOnChange = useCallback(
-    debounce((color: string) => {
+    debounce((color) => {
       onChange(color);
     }, 100),
     [onChange]
@@ -27,12 +18,12 @@ const ColorSpectrumSelector: React.FC<ColorSpectrumSelectorProps> = ({
     setLocalColor(initialColor);
   }, [initialColor]);
 
-  const handleColorChange = (color: string) => {
+  const handleColorChange = (color) => {
     setLocalColor(color);
     debouncedOnChange(color);
   };
 
-  const handleHexInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleHexInputChange = (e) => {
     const value = e.target.value;
     if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
       setLocalColor(value);
@@ -72,6 +63,12 @@ const ColorSpectrumSelector: React.FC<ColorSpectrumSelectorProps> = ({
       </div>
     </div>
   );
+};
+
+ColorSpectrumSelector.propTypes = {
+  initialColor: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  label: PropTypes.string,
 };
 
 export default ColorSpectrumSelector;

@@ -1,43 +1,35 @@
-import React, { Component, ErrorInfo } from 'react';
+import React, { Component } from 'react';
 import { AlertCircle, RefreshCw } from 'lucide-react';
+import PropTypes from 'prop-types';
 
-interface Props {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-  onReset?: () => void;
-}
-
-interface State {
-  hasError: boolean;
-  error: Error | null;
-}
-
-class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
+class ErrorBoundary extends Component {
+  constructor(props) {
     super(props);
     this.state = {
       hasError: false,
-      error: null
+      error: null,
     };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error) {
     return {
       hasError: true,
-      error
+      error,
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error, errorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
   }
 
   handleReset = () => {
     this.setState({
       hasError: false,
-      error: null
+      error: null,
     });
-    this.props.onReset?.();
+    if (this.props.onReset) {
+      this.props.onReset();
+    }
   };
 
   render() {
@@ -74,4 +66,10 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-export default ErrorBoundary; 
+ErrorBoundary.propTypes = {
+  children: PropTypes.node.isRequired,
+  fallback: PropTypes.node,
+  onReset: PropTypes.func,
+};
+
+export default ErrorBoundary;
